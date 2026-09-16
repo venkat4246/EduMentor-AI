@@ -1,0 +1,6 @@
+{
+  "name": "EduMentor AI",
+  "description": "Your Personal AI Learning & Career Assistant - intelligent educational platform for college students to master concepts, analyze materials, conduct research, generate quizzes, and plan careers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

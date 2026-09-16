@@ -1,0 +1,94 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User academic profile and study statistics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "university": { "type": "string" },
+        "major": { "type": "string" },
+        "year": { "type": "string" },
+        "targetRole": { "type": "string" },
+        "studyStreakDays": { "type": "number" },
+        "totalStudyHours": { "type": "number" },
+        "completedTasksCount": { "type": "number" },
+        "averageQuizScore": { "type": "number" },
+        "joinedDate": { "type": "string" },
+        "theme": { "type": "string", "enum": ["dark", "light"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "name", "email", "university", "major", "year"]
+    },
+    "StudyPlanDoc": {
+      "title": "StudyPlanDoc",
+      "description": "Personalized study schedule and task milestones for a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "planTitle": { "type": "string" },
+        "overview": { "type": "string" },
+        "weeklyHours": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "planTitle", "weeklyHours"]
+    },
+    "QuizResultDoc": {
+      "title": "QuizResultDoc",
+      "description": "Academic quiz submission and scored analytics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "quizTitle": { "type": "string" },
+        "subject": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "score": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "percentage": { "type": "number" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "quizTitle", "score", "totalQuestions", "percentage"]
+    },
+    "ResearchReportDoc": {
+      "title": "ResearchReportDoc",
+      "description": "Synthesized academic research report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "query": { "type": "string" },
+        "domain": { "type": "string" },
+        "summary": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "title", "query", "domain", "summary"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Student user profile documents indexed by Firebase Auth UID"
+    },
+    "/users/{userId}/studyPlans/{planId}": {
+      "schema": "StudyPlanDoc",
+      "description": "User generated study schedule and task records"
+    },
+    "/users/{userId}/quizResults/{quizResultId}": {
+      "schema": "QuizResultDoc",
+      "description": "Historical quiz assessments for the user"
+    },
+    "/users/{userId}/researchReports/{reportId}": {
+      "schema": "ResearchReportDoc",
+      "description": "Deep research reports synthesized and saved by the user"
+    }
+  }
+}
