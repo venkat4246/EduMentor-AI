@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import dotenv from "dotenv";
-import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 
 import { handleChat } from "./server/routes/chat.js";
@@ -14,12 +14,9 @@ import { handleGetResources } from "./server/routes/resources.js";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   // JSON payload parser with generous limit for PDF base64 payloads
   app.use(express.json({ limit: "50mb" }));
@@ -30,6 +27,7 @@ async function startServer() {
     res.json({
       status: "ok",
       service: "EduMentor AI Server",
+      port: PORT,
       timestamp: new Date().toISOString(),
       hasGeminiKey: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY"),
     });
@@ -45,8 +43,14 @@ async function startServer() {
   app.post("/api/quiz", handleGenerateQuiz);
   app.get("/api/resources", handleGetResources);
 
-  // Vite middleware in development vs static dist in production
-  if (process.env.NODE_ENV !== "production") {
+  // Production vs development detection
+  const isProduction =
+    process.env.NODE_ENV === "production" ||
+    Boolean(process.env.K_SERVICE) ||
+    Boolean(process.env.K_REVISION) ||
+    Boolean(process.argv[1] && process.argv[1].endsWith("server.cjs"));
+
+  if (!isProduction) {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -56,7 +60,9 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    const distPath = fs.existsSync(path.join(process.cwd(), "dist", "index.html"))
+      ? path.join(process.cwd(), "dist")
+      : process.cwd();
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
